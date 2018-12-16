@@ -1,4 +1,4 @@
-import typeDefs from './data/schema.graphql';
+import typeDefs from './schema.graphql';
 import {makeExecutableSchema} from 'graphql-tools/dist/index';
 import {graphql} from 'graphql';
 import axios from 'axios';
@@ -30,7 +30,7 @@ const resolvers = {
       }
     },
     async addresses(_, {query}) {
-      return await axios({
+      const suggestions =  await axios({
         url: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address',
         method: 'POST',
         responseType: 'json',
@@ -41,6 +41,33 @@ const resolvers = {
           'Authorization': 'Token cdd1410a745906c7458825d7ba0702b51d46404e'
         }
       }).then(({data: {suggestions}}) => suggestions);
+
+      return suggestions.map(({value, data}) => {
+        const {
+          postal_code,
+          country,
+          region,
+          city,
+          area,
+          street,
+          house,
+          block,
+          flat
+        } = data;
+
+        return {
+          id: `Address:${value}`,
+          postalCode: postal_code || '',
+          country: country || '',
+          region: region || '',
+          locality: city || '',
+          area: area || '',
+          street: street || '',
+          house: house || '',
+          block: block || '',
+          flat: flat || ''
+        };
+      });
     }
   }
 };
@@ -50,8 +77,8 @@ const executableSchema = makeExecutableSchema({
   resolvers
 });
 
-export async function fetchQuery(operation, variableValues) {
-  const result = await graphql(executableSchema, operation.text, null, null, variableValues);
-  console.log(result);
-  return result;
+async function fetchQuery(operation, variableValues) {
+  return await graphql(executableSchema, operation.text, null, null, variableValues);
 }
+
+export default fetchQuery;

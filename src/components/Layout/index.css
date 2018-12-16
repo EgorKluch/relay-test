@@ -1,0 +1,7 @@
+.layout {
+  &__content {
+    padding: 24px;
+    width: 1024px;
+    margin: auto;
+  }
+}
