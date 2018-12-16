@@ -22,6 +22,13 @@ const resolvers = {
         }
       }
     },
+    user() {
+      return {
+        id: 'User:1',
+        name: 'Егор',
+        address: null
+      }
+    },
     async addresses(_, {query}) {
       return await axios({
         url: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address',
@@ -46,5 +53,5 @@ const executableSchema = makeExecutableSchema({
 export async function fetchQuery(operation, variableValues) {
   const result = await graphql(executableSchema, operation.text, null, null, variableValues);
   console.log(result);
-  return graphql(executableSchema, operation.text, null, null, variableValues);
+  return result;
 }

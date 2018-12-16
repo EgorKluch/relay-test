@@ -15,16 +15,13 @@ export function App() {
   return <QueryRenderer
     environment={environment}
     query={graphql`
-      query AppQuery($id: ID!) {
-        node(id: $id) {
-          ... on User {
-            id
-            name
-          }
+      query AppQuery($userId: ID!) {
+        user: node(id: $userId) {
+          ...Layout_user
         }
       }
     `}
-    variables={{id: 'User:1'}}
+    variables={{userId: 'User:1'}}
     render={() => <Layout/>}
   />
 }
