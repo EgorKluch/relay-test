@@ -1,0 +1,60 @@
+interface Node {
+    id: ID!
+}
+
+type User implements Node {
+    id: ID!
+    name: String!
+    address: Address
+}
+
+type Address implements Node {
+    id: ID!
+    postalCode: String!
+    country: String!
+    region: String!
+    area: String
+    locality: String!
+    street: String
+    house: String
+    block: String
+    flat: String
+}
+
+type Query {
+    node(id: ID!): Node!
+    addresses(query: String!): [Address!]!
+}
+
+input AddAddressToUserInput {
+    userId: ID!
+    postalCode: String!
+    country: String!
+    region: String!
+    area: String
+    locality: String!
+    street: String
+    house: String
+    block: String
+    flat: String
+}
+
+input RemoveAddressFromUserInput {
+    userId: ID!
+    addressId: ID!
+}
+
+type AddAddressToUserPayload {
+    address: Address!
+    user: User!
+}
+
+type RemoveAddressFromUserPayload {
+    addressId: ID!
+    user: User!
+}
+
+type Mutation {
+    addAddressToUser(input: AddAddressToUserInput!): AddAddressToUserPayload!
+    removeAddressFromUser(input: RemoveAddressFromUserInput!): RemoveAddressFromUserPayload!
+}
