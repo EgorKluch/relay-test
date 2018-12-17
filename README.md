@@ -1,44 +1,39 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Как запустить
+* Клонировать репозиторий
+* Выполнить команду ```yarn install```
+* Выполнить команду ```yarn relay```
+* Выполнить команду ```yarn start```
+* Если запросы к dadata будут падать с 403 ошибкой - в src/config подставить свой токен
 
-## Available Scripts
 
-In the project directory, you can run:
+### Что осталось сделать
 
-### `npm start`
+##### Не обновляется AddressesField на refetch
+При изменении поля адреса в AddressesField происходит успешный запрос к мокам и данные сохраняются в Store.
+При этом, AddressesField не перерендеривается, не успел понять почему 
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+##### Не реализованы мутаций 
+Добавил мутацию addAddressToUser в models, но не успел добавить в React-компонени и протестировать
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+##### Ошибка в RelayObservable при быстром изменении значения инпута AddressesField
+```
+Uncaught ReferenceError: r is not defined
+   at Object.unsubscribe (<anonymous>:1:2238)
+   at Object.unsubscribe (RelayObservable.js:217)
+```
+В AddressesField пришлось использовать debounce: при быстром наборе текста в input падает ошибка в RelayObservable.
 
-### `npm test`
+С точки зрения нагрузки на сервер возможно это и плюс - но пока не понял источник ошибки не могу гарантировать,
+ что она не будет возникать при каких-то кейсах
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+##### Остались вопросы к архитектуре
+В корневом элементе я указываю один большой фрагментированный query, и 
+потом при получении ответа все props прокидываю каскадом вниз.
+В случае большого приложения, вижу 2 проблемы:
+* Аргументов и фрагментов может быть очень много. Например, работать с query с 30 аргументами 
+может быть не очень удобно. Например, тот же аргумент addresses нужен только для AddressesField,
+и, возможно, лучше, что бы только AddressesField о нем и знал 
+* Каскад пропсов с ростом приложения может превратиться в ад, потому что запомнить
+и понять какие нужны на каком уровне компонентов будет уже сложно. В redux это мультиконнектом
+легко решается - запрашиваются только те пропсы, которые нужны в текущем компоненте, не заботясь
+о дочерних элементах (они сами все получат, кроме common-компонентов)

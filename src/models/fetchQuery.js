@@ -2,6 +2,7 @@ import typeDefs from './schema.graphql';
 import {makeExecutableSchema} from 'graphql-tools/dist/index';
 import {graphql} from 'graphql';
 import axios from 'axios';
+import config from '../config';
 
 
 const resolvers = {
@@ -38,7 +39,7 @@ const resolvers = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Token cdd1410a745906c7458825d7ba0702b51d46404e'
+          'Authorization': `Token ${config.mocks.dadataToken}`
         }
       }).then(({data: {suggestions}}) => suggestions);
 
